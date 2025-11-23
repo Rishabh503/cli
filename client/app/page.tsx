@@ -6,7 +6,7 @@ const Home = () => {
   return (
     <div className="bg-red-300">
       <Button/>
-    ome</div>
+    </div>
   )
 }
 
