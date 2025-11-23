@@ -5,7 +5,7 @@ import chalk from "chalk"
 import figlet from "figlet"
 
 import {Command} from "commander"
-import { login, loginAction } from "./commands/auth/login.js"
+import { login, loginAction, logout, whoami } from "./commands/auth/login.js"
 
 dotenv.config()
 
@@ -24,6 +24,8 @@ async function main(){
     const program =new Command("rishabh")
     program.version("0.0.1").description("RISHABH cli - Your Personal CLI Assitant")
     .addCommand(login)
+    .addCommand(logout)
+    .addCommand(whoami )
 
     program.action(()=>{
         program.help();
