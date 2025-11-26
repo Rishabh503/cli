@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
-import dotenv from "dotenv"
 import chalk from "chalk"
+import dotenv from "dotenv"
 import figlet from "figlet"
 
-import {Command} from "commander"
-import { login, loginAction, logout, whoami } from "./commands/auth/login.js"
+import { Command } from "commander"
+import { wakeUp } from "./commands/ai/wakeUp.js"
+import { login, logout, whoami } from "./commands/auth/login.js"
 
 dotenv.config()
 
@@ -19,13 +20,14 @@ async function main(){
         })
     ))
 
-    console.log(chalk.gray("Your Personal CLI  Assitant"))
+    console.log(chalk.yellow("Your Personal CLI  Assitant"))
 
     const program =new Command("rishabh")
     program.version("0.0.1").description("RISHABH cli - Your Personal CLI Assitant")
     .addCommand(login)
     .addCommand(logout)
     .addCommand(whoami )
+    .addCommand(wakeUp)
 
     program.action(()=>{
         program.help();
