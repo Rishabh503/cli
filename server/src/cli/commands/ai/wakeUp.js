@@ -6,6 +6,7 @@ import prisma from "../../../lib/db.js"
 import { getStoredToken } from "../../../lib/token.js" 
 import { startChat } from "../../chat-with-ai.js"
 import { startToolChat } from "../../chat-with-tool.js"
+import { startAgentChat } from "../../chat-with-agent.js"
 
 const wakeUpAction =async()=>{
     const token=await getStoredToken()
@@ -68,7 +69,8 @@ const wakeUpAction =async()=>{
             await startToolChat()
             break;
         case "agent":
-            console.log(chalk.yellow("Agentic Mode coming soon"))
+            // console.log(chalk.yellow("Agentic Mode coming soon"))
+            await startAgentChat()
             break;
     }
 }

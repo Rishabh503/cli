@@ -8,7 +8,7 @@ import { AIService } from "./ai/google-sercvice.js";
 import { ChatService } from "../service/chat-service.js";
 import { getStoredToken } from "../lib/token.js"; 
 import prisma from "../lib/db.js";
-import { ConeGeometry } from "three/src/Three.Core.js";
+
 
 marked.use(markedTerminal({
   code: chalk.cyan,
