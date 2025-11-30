@@ -5,6 +5,7 @@ import yoctoSpinner from "yocto-spinner"
 import prisma from "../../../lib/db.js" 
 import { getStoredToken } from "../../../lib/token.js" 
 import { startChat } from "../../chat-with-ai.js"
+import { startToolChat } from "../../chat-with-tool.js"
 
 const wakeUpAction =async()=>{
     const token=await getStoredToken()
@@ -63,7 +64,8 @@ const wakeUpAction =async()=>{
             startChat("chat")
             break;
         case "tool":
-            console.log(chalk.green("Tool Calling is selected"))
+            // console.log(chalk.green("Tool Calling is selected"))
+            await startToolChat()
             break;
         case "agent":
             console.log(chalk.yellow("Agentic Mode coming soon"))
