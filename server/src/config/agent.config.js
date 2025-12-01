@@ -1,29 +1,27 @@
 import { generateObject } from "ai";
 import chalk from "chalk";
-import { z } from "zod/v4";
+import { z } from "zod";  
 
-
+import fs from 'fs/promises';
+import path from 'path';
+import yoctoSpinner from "yocto-spinner";
 
 const ApplicationSchema = z.object({
-  folderName: z.string().describe("Kebab-Case folder name for the app"),
-  description: z.string().describe("Brief Description of what was created"),
+  folderName: z.string().describe("Kebab-case folder name for the app"),
+  description: z.string().describe("Brief description of what was created"),
   files: z.array(
-    z
-      .object({
-        path: z.string().describe("Relative file path (eg src/App.jsx)"),
-        content: z.string().describe("complete file content"),
-      })
-      .describe("All files needed  for the application")
+    z.object({
+      path: z.string().describe("Relative file path (eg src/App.jsx)"),
+      content: z.string().describe("complete file content"),
+    }).describe("All files needed for the application")
   ),
-  setUpCommnads: z.array(
-    z
-      .string()
-      .describe("bash commands to setup and run eg(npm install , npm run dev )")
+  setUpCommands: z.array(  
+    z.string().describe("bash commands to setup and run eg(npm install, npm run dev)")
   ),
   dependencies: z
-    .record(z.string())
+    .string()  // Changed from z.record(z.string())
     .optional()
-    .describe("npm dependenices with versions"),
+    .describe("npm dependencies as JSON string with versions, e.g. {\"react\": \"^18.0.0\"}"),
 });
 
 function printSystem(message) {
@@ -72,7 +70,7 @@ async function createApplicationFiles(baseDir, folderName,files ){
 
     for(const file of files){
         const filePath=path.join(appDir,file.path);
-        const fileDir=path.dirName(filePath)
+        const fileDir=path.dirname(filePath)
 
         await fs.mkdir(fileDir,{recursive:true});
         await fs.writeFile(filePath,file.content,'utf8');
@@ -94,7 +92,10 @@ export async function generateApplication(
     printSystem(chalk.gray(`Request: ${description}`));
 
     printSystem(chalk.magenta("-_- Agent Respone"));
-
+ const spinner = yoctoSpinner({
+    text: "AI is thinking...",
+    color: "cyan",
+  }).start();
     const  result  = await generateObject({
       model: aiService.model,
       schema: ApplicationSchema,
@@ -142,10 +143,10 @@ Provide:
     printSystem(chalk.green.bold("\n ✨ Application created successfully!\n"));
     printSystem(chalk.cyan(` 📂 Location: ${chalk.bold(appDir)}\n`));
 
-    if (application.setUpCommnads.length > 0) {
+    if (application.setUpCommands.length > 0) {
       printSystem(chalk.cyan(" ➡️ Next Steps:\n"));
       printSystem(chalk.white("```bash"));
-      application.setUpCommnads.forEach((cmd) => {
+      application.setUpCommands.forEach((cmd) => {
         printSystem(chalk.white(cmd));
       });
       printSystem(chalk.white("```\n"));
@@ -155,7 +156,7 @@ Provide:
       folderName: application.folderName,
       appDir,
       files:application.files.map(f=>f.path),
-      commands:application.setUpCommnads,
+      commands:application.setUpCommands,
       success:true
     };
   } catch (error) {

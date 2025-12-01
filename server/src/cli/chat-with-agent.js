@@ -9,6 +9,8 @@ import { ChatService } from "../service/chat-service.js";
 import { getStoredToken } from "../lib/token.js";
 import prisma from "../lib/db.js";
 import { generateApplication } from "../config/agent.config.js";
+// import yoctoSpinner from "yocto-spinner";
+
 
 const aiService = new AIService();
 const chatService = new ChatService();
@@ -71,6 +73,15 @@ async function initConversation(userId, conversationId = null, mode = "agent") {
 async function saveMessage(conversationId, role, content) {
   return await chatService.addMessage(conversationId, role, content);
 }
+
+function displayMessages(messages) {
+  messages.forEach(msg => {
+    console.log(chalk[msg.role === 'user' ? 'blue' : 'green'](
+      `${msg.role}: ${msg.content}`
+    ));
+  });
+}
+
 async function agentLoop(conversation) {
   const helpBox = boxen(
     `${chalk.cyan.bold("What can the agent do?")}\n` +
@@ -143,6 +154,11 @@ async function agentLoop(conversation) {
     await saveMessage(conversation.id, "user", userInput);
 
     try {
+       const spinner = yoctoSpinner({
+          text: "AI is thinking...",
+          color: "cyan",
+        }).start();
+        
       const result = await generateApplication(
         userInput,
         aiService,
@@ -157,6 +173,7 @@ async function agentLoop(conversation) {
 
         await saveMessage(conversation.id, "assistant", responseMessage);
 
+        spinner.stop()
         // Ask if user wants to generate another app
         const continuePrompt = await confirm({
           message: chalk.cyan(
